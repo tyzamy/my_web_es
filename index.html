@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游施网 - 恩施文旅非遗数字化平台</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft YaHei",sans-serif}
+        body{background:#f8fafb;color:#333;line-height:1.7}
+        header{background:#1a5c4a;color:white;padding:22px 40px;text-align:center}
+        header h1{font-size:28px}
+        header p{opacity:0.9;margin-top:6px}
+        nav{background:#144738;padding:14px;text-align:center;position:sticky;top:0;z-index:999}
+        nav a{color:white;margin:0 18px;text-decoration:none;font-size:16px}
+        nav a:hover{color:#ffd799}
+        .banner{position:relative;width:100%;aspect-ratio:8/5;overflow:hidden}
+        .banner img{width:100%;height:100%;object-fit:cover;display:block}
+        .banner-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;text-align:center}
+        .banner h2{font-size:32px;margin-bottom:12px}
+        .banner p{font-size:18px}
+        .container{max-width:1200px;margin:50px auto;padding:0 20px}
+        .title{text-align:center;font-size:24px;color:#1a5c4a;margin-bottom:35px}
+        .row{display:flex;gap:25px;flex-wrap:wrap;justify-content:center}
+        .card{background:white;width:320px;border-radius:10px;box-shadow:0 2px 12px #00000012;overflow:hidden;transition:0.3}
+        .card:hover{transform:translateY(-8px)}
+        .card-img-container{width:100%;aspect-ratio:8/5;position:relative;overflow:hidden}
+        .card-img{width:100%;height:100%;object-fit:cover;display:block}
+        .card-img-prev, .card-img-next{
+            position:absolute;top:50%;transform:translateY(-50%);
+            width:30px;height:30px;border-radius:50%;
+            background:rgba(0,0,0,0.5);color:white;
+            border:none;cursor:pointer;display:flex;
+            align-items:center;justify-content:center;
+            opacity:0;transition:opacity 0.3s ease;
+        }
+        .card-img-prev{left:10px;}
+        .card-img-next{right:10px;}
+        .card-img-container:hover .card-img-prev,
+        .card-img-container:hover .card-img-next{opacity:1;}
+        .card-text{padding:20px}
+        .card h3{color:#1a5c4a;margin-bottom:10px}
+        .look-btn{display:inline-block;margin-top:12px;padding:6px 16px;background:#1a5c4a;color:white;border-radius:4px;text-decoration:none}
+        .look-btn:hover{background:#144738}
+        .about{background:#eef6f3;padding:40px;border-radius:12px;margin:40px 0}
+        .about-img{width:100%;max-width:800px;aspect-ratio:8/5;object-fit:cover;border-radius:10px;margin:20px auto;display:block}
+        .second-page{display:none;padding:40px;max-width:1000px;margin:0 auto}
+        .second-page h2{color:#1a5c4a;margin-bottom:20px}
+        .back-btn{padding:8px 20px;background:#1a5c4a;color:white;text-decoration:none;border-radius:5px;margin-bottom:20px;display:inline-block}
+        .detail-img-container{width:100%;aspect-ratio:8/5;position:relative;margin:20px 0;border-radius:10px;overflow:hidden}
+        .detail-img{width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0;transition:opacity 0.5s ease}
+        .detail-img.active{opacity:1;}
+        .detail-img-prev, .detail-img-next{
+            position:absolute;top:50%;transform:translateY(-50%);
+            width:40px;height:40px;border-radius:50%;
+            background:rgba(0,0,0,0.6);color:white;
+            border:none;cursor:pointer;display:flex;
+            align-items:center;justify-content:center;
+            z-index:10;
+        }
+        .detail-img-prev{left:20px;}
+        .detail-img-next{right:20px;}
+        .img-indicators{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10}
+        .img-indicator{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.6);cursor:pointer;transition:background-color 0.3s ease}
+        .img-indicator.active{background:#1a5c4a;}
+        .contact-box{background:#eef6f3;padding:30px;border-radius:12px;margin-top:30px;line-height:2.2}
+        footer{text-align:center;padding:25px;background:#1a5c4a;color:#fff;margin-top:60px}
+/* 轮播图容器 */
+        .banner {
+            width: 100%;
+            height: 400px;
+            position: relative;
+            overflow: hidden; /* 超出部分隐藏，实现单张显示 */
+        }
+        /* 图片列表 */
+        .banner-img {
+            width: 400%; /* 3张图的话就是300%，这里写通用的400% */
+            height: 100%;
+            display: flex; /* 横向排列图片 */
+            transition: transform 0.5s ease; /* 切换动画 */
+        }
+        .banner-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 图片不变形 */
+        }
+        /* 文字覆盖层 */
+        .banner-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+        .banner-text h2 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .banner-text p {
+            font-size: 18px;
+        }
+        /* 左右箭头按钮 */
+        .banner-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 80px;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .banner-btn.left { left: 10px; }
+        .banner-btn.right { right: 10px; }
+        /* 小圆点指示器 */
+        .banner-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+        }
+        .dot.active {
+            background: white;
+        }
+
+/*jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj*/
+.neon-text{
+  font-size:20px;
+  font-weight:bold;
+  font-family:微软雅黑;
+  /* 霓虹流动动画 */
+  background: linear-gradient(90deg,#0ff,#f0f,#ff0,#0f0,#0ff);
+  background-size:400% 100%;
+  -webkit-background-clip:text;
+  color:transparent;
+  animation:flow 3s linear infinite,blink 1.5s ease-in-out infinite alternate;
+  text-shadow:0 0 10px #0ff,0 0 20px #f0f;
+}
+/* 流光移动 */
+@keyframes flow{
+  0%{background-position:0% 50%;}
+  100%{background-position:400% 50%;}
+}
+/* 霓虹呼吸闪烁 */
+@keyframes blink{
+  from{filter:brightness(1);}
+  to{filter:brightness(1.3);}
+}
+
+
+/*jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj*/
+    </style>
+</head>
+<body>
+    <header>
+        <h1>游施网</h1>
+        <p class="neon-text">恩施文旅 · 非遗数字化旅游平台</p>
+    </header>
+    <nav>
+        <a href="#home">首页</a>
+        <a href="#spot">恩施景点</a>
+        <a href="#intangible">非遗文化</a>
+        <a href="#strategy">旅游攻略</a>
+        <a href="#about">关于平台</a>
+        <a href="#contact">联系我们</a>
+    </nav>
+
+ <!--<div class="banner" id="home">
+        <img src="img/banner.jpg" alt="恩施风光">
+        <div class="banner-text">
+            <h2>探秘恩施秘境 · 传承土家非遗</h2>
+            <p>腾龙洞 | 大峡谷 | 土司城 | 土家织锦 | 恩施特色文旅一站式服务</p>
+        </div>
+    </div>-->
+
+<!-- 轮播图主体 -->
+<div class="banner" id="home">
+    <!-- 图片列表 -->
+    <div class="banner-img">
+        <img src="img/banner.jpg" alt="恩施风光-1">
+        <img src="img/banner2.jpg" alt="恩施风光-2">
+        <img src="img/banner3.jpg" alt="恩施风光-3">
+    </div>
+
+    <!-- 文字内容（和你原来的代码一致） -->
+    <div class="banner-text">
+        <h2>探秘恩施秘境 · 传承土家非遗</h2>
+        <p>腾龙洞 | 大峡谷 | 土司城 | 土家织锦</p>
+    </div>
+
+    <!-- 左右切换按钮 -->
+    <button class="banner-btn left">&lt;</button>
+    <button class="banner-btn right">&gt;</button>
+
+    <!-- 小圆点指示器 -->
+    <div class="banner-dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+    </div>
+</div>
+
+
+
+    <div class="container" id="index-page">
+        <h2 class="title" id="spot">恩施热门景点</h2>
+        <div class="row">
+            <div class="card">
+                <div class="card-img-container" onclick="openPage('daxiagu')">
+                    <img src="daxiagu.jpg" class="card-img" data-index="0">
+                </div>
+                <div class="card-text">
+                    <h3>恩施大峡谷</h3>
+                    <p>喀斯特地貌奇观，一炷香标志性景观，恩施必游地标。</p>
+                    <a href="javascript:openPage('daxiagu')" class="look-btn">查看详情</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-img-container" onclick="openPage('tenglong')">
+                    <img src="tenglong.jpg" class="card-img" data-index="0">
+                </div>
+                <div class="card-text">
+                    <h3>腾龙洞</h3>
+                    <p>亚洲特大天然溶洞，洞内凉爽舒适，自然景观震撼。</p>
+                    <a href="javascript:openPage('tenglong')" class="look-btn">查看详情</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-img-container" onclick="openPage('tusicheng')">
+                    <img src="tusicheng.jpg" class="card-img" data-index="0">
+                </div>
+                <div class="card-text">
+                    <h3>恩施土司城</h3>
+                    <p>土家族文化风情园区，感受千年土司民俗文化。</p>
+                    <a href="javascript:openPage('tusicheng')" class="look-btn">查看详情</a>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="title" id="intangible">土家非遗文化</h2>
+        <div class="row">
+            <div class="card">
+                <div class="card-img-container">
+                    <img src="zhijin.jpg" class="card-img" data-index="0">
+                </div>
+                <div class="card-text">
+                    <h3>土家织锦</h3>
+                    <p>国家级非遗技艺，花纹精美，承载土家族民俗文化。</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-img-container">
+                    <img src="baishou.jpg" class="card-img" data-index="0">
+                </div>
+                <div class="card-text">
+                    <h3>恩施摆手舞</h3>
+                    <p>土家传统民俗舞蹈，氛围热闹，极具民族特色。</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-img-container">
+                    <img src="youcha.jpg" class="card-img" data-index="0">
+                </div>
+                <div class="card-text">
+                    <h3>土家油茶汤</h3>
+                    <p>恩施特色非遗美食，鲜香浓郁，本地特色佳肴。</p>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="title" id="strategy">景区服务 & 出行攻略</h2>
+        <div class="about">
+            <h3>景区便民服务</h3>
+            <img src="banner.jpg" class="about-img" alt="恩施风景">
+            <p>1. 各大景区提供游客中心、免费休息区、母婴室、无障碍通道</p>
+            <p>2. 支持线上购票、扫码入园、团体预约、导游陪同服务</p>
+            <p>3. 提供恩施本地美食推荐、民宿酒店预订、自驾路线规划</p>
+            <p>4. 节假日客流实时播报，错峰出行贴心提醒</p>
+            <br>
+            <h3>最佳游玩季节</h3>
+            <p>春季3-5月：山花盛开，气候宜人；夏季6-8月：天然避暑胜地；秋季9-11月：山林秋景绝美</p>
+        </div>
+
+        <div class="about" id="about">
+            <h2>关于平台</h2>
+            <img src="banner.jpg" class="about-img" alt="恩施风光">
+            <p>游施网是专注恩施文旅非遗数字化平台，整合恩施八大县市旅游资源、非遗文化、出行攻略、特色特产，助力恩施文旅线上推广，带动地方旅游经济发展。</p>
+        </div>
+
+        <div class="contact-box" id="contact">
+            <h2 class="title" style="margin-bottom:15px;">联系我们</h2>
+            <p><strong>平台运营单位：</strong>游施网文旅宣传工作室</p>
+            <p><strong>咨询热线：</strong>0718-8866998</p>
+            <p><strong>客服微信：</strong>enshi_lvyou666</p>
+            <p><strong>官方邮箱：</strong>youshi@enshi.com</p>
+            <p><strong>办公地址：</strong>湖北省恩施市文旅大厦3楼</p>
+            <p><strong>服务范围：</strong>恩施全市八大县市全域旅游服务</p>
+            <p><strong>工作时间：</strong>周一至周日 08:00-18:00 节假日正常接待</p>
+        </div>
+    </div>
+
+    <!-- 大峡谷详情页 -->
+    <div class="second-page" id="page-daxiagu">
+        <a href="javascript:backIndex()" class="back-btn">← 返回首页</a>
+        <h2>恩施大峡谷 详细介绍</h2>
+        <div class="detail-img-container">
+            <img src="daxiagu.jpg" class="detail-img active" data-index="0">
+        </div>
+        <p>恩施大峡谷位于湖北恩施市境内，世界知名地质奇观，分为云龙地缝与七星寨两大景区，绝壁栈道惊险刺激，一炷香石柱堪称自然奇迹。</p>
+        <p>门票：165元/人 | 开放：07:30-17:30 | 电话：0718-8542366</p>
+    </div>
+
+    <!-- 腾龙洞详情页 -->
+    <div class="second-page" id="page-tenglong">
+        <a href="javascript:backIndex()" class="back-btn">← 返回首页</a>
+        <h2>利川腾龙洞 详细介绍</h2>
+        <div class="detail-img-container">
+            <img src="tenglong.jpg" class="detail-img active" data-index="0">
+        </div>
+        <p>腾龙洞坐落于利川市，是国内体量最大的天然溶洞，洞内常年恒温，夏季避暑绝佳胜地，洞内配有大型土家族实景民俗演出。</p>
+        <p>门票：180元/人 | 电话：0718-7265888</p>
+    </div>
+
+    <!-- 土司城详情页 -->
+    <div class="second-page" id="page-tusicheng">
+        <a href="javascript:backIndex()" class="back-btn">← 返回首页</a>
+        <h2>恩施土司城 详细介绍</h2>
+        <div class="detail-img-container">
+            <img src="tusicheng.jpg" class="detail-img active" data-index="0">
+        </div>
+        <p>恩施土司城是规模最大的土家族文化主题园区，复刻古代土司王府建筑格局，风雨桥、吊脚楼、九进堂一应俱全。</p>
+        <p>门票：50元/人 | 电话：0718-8456790</p>
+    </div>
+
+    <footer>
+        © 2026 游施网 | 恩施文旅非遗数字化平台 版权所有
+        <p style="font-size:14px;margin-top:8px;">文旅宣传·景区预约·民俗体验·特产导购 一站式服务</p>
+    </footer>
+
+    <script>
+        function openPage(name){
+            document.getElementById("index-page").style.display="none";
+            document.querySelectorAll(".second-page").forEach(item=>item.style.display="none");
+            document.getElementById("page-"+name).style.display="block";
+            window.scrollTo(0,0);
+        }
+        function backIndex(){
+            document.getElementById("index-page").style.display="block";
+            document.querySelectorAll(".second-page").forEach(item=>item.style.display="none");
+        }
+
+ // 核心轮播逻辑
+    const bannerImg = document.querySelector('.banner-img');
+    const dots = document.querySelectorAll('.dot');
+    const leftBtn = document.querySelector('.banner-btn.left');
+    const rightBtn = document.querySelector('.banner-btn.right');
+    let index = 0; // 当前显示的图片索引
+    const imgCount = 3; // 图片总数量
+
+    // 更新轮播位置和小圆点状态
+    function updateBanner() {
+        // 移动图片列表，实现切换
+        bannerImg.style.transform = `translateX(-${index * 100 / imgCount}%)`;
+        // 更新小圆点
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === index);
+        });
+    }
+
+    // 下一张
+    function next() {
+        index = (index + 1) % imgCount;
+        updateBanner();
+    }
+
+    // 上一张
+    function prev() {
+        index = (index - 1 + imgCount) % imgCount;
+        updateBanner();
+    }
+
+    // 自动轮播定时器
+    let timer = setInterval(next, 3000); // 3秒切换一次
+
+    // 鼠标悬停暂停轮播，离开继续
+    document.querySelector('.banner').addEventListener('mouseenter', () => {
+        clearInterval(timer);
+    });
+    document.querySelector('.banner').addEventListener('mouseleave', () => {
+        timer = setInterval(next, 3000);
+    });
+
+    // 点击左右按钮切换
+    rightBtn.addEventListener('click', () => {
+        clearInterval(timer);
+        next();
+        timer = setInterval(next, 3000);
+    });
+    leftBtn.addEventListener('click', () => {
+        clearInterval(timer);
+        prev();
+        timer = setInterval(next, 3000);
+    });
+
+    // 点击小圆点切换
+    dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => {
+            clearInterval(timer);
+            index = i;
+            updateBanner();
+            timer = setInterval(next, 3000);
+        });
+    });
+
+    </script>
+</body>
+</html>
